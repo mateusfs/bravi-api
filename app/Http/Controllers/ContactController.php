@@ -32,7 +32,16 @@ class ContactController extends Controller
 	 */
 	public function save(Request $request)
 	{
-	    return Contact::created($request);
+	    $request->validate([
+	        'id' => 'required',
+	        'person' => 'required',
+	        'email' => 'required'
+	    ]);
+	    
+	    $contact = new Contact($request->all());
+	    $contact->save();
+	    
+	    return response()->json(['id' => $contact->id]);
 	}
 	
 	
@@ -47,7 +56,7 @@ class ContactController extends Controller
 	{
 		if($request){
 			foreach ($request as $contact) {
-				return Contact::updated($contact);		
+			    return Contact::save($contact);		
 			}
 		}
 	}

@@ -10,34 +10,31 @@ These instructions will get you a copy of the project up and running on your loc
 
 A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
-
 ```
 composer install
 ```
 
-And repeat
+And await
 
 ```
 until finished
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+An example of getting some data out of the system or using it for a little demo
+
+```
+file: db_bravi.sql
+```
 
 ## Built With
 
 * [Portfoliobox](https://mateusfs.portfoliobox.net/works) - The actor
 
-## Authors
+## Author
 
-* **Mateus Ferri Schmitz** - *Initial work* - [mateusfs](https://github.com/mateusfs)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+* **Mateus Ferri Schmitz** - [mateusfs](https://github.com/mateusfs)
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* Thanks BRAVI
+

@@ -35,7 +35,18 @@ class PersonController extends Controller
 	 */
 	public function save(Request $request)
 	{
-	    return Person::create($request);
+	    
+	    $request->validate([
+	        'id' => 'required',
+	        'name' => 'required',
+	        'sex' => 'required',
+	        'age' => 'required'
+	    ]);
+	    
+	    $person = new Person($request->all());
+	    $person->save();
+	    
+	    return response()->json(['id' => $person->id]);
 	}
 	
 	/**
