@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Contact extends Model
 {
 	protected $table = 'contact';
-	protected $primaryKey = 'idContact';
-	
+	protected $primaryKey = 'id';
+	public $timestamps = false;
+
 	protected $fillable = [
-			'idContact',
-			'idPerson',
+			'id',
+			'person',
 			'email',
 			'phone',
 			'cellphone'

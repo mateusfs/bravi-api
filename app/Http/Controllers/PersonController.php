@@ -23,11 +23,17 @@ class PersonController extends Controller
      */
 	public function get($id)
 	{
-		if($id){
-            return Person::where('id', $id)->firstOrFail();
-        }else{
+		if(!$id){
             return response()->json(['errors' => 'Person id is required.'], 403);
-        }
+		}
+		
+		$person = Person::where('id', $id)->first();
+	
+		if(!$person){
+            return response()->json(['errors' => 'Person not found.'], 403);
+		}
+
+		return $person;
 	}
 	
 	
@@ -47,17 +53,17 @@ class PersonController extends Controller
 	        'age' => 'required'
 		]);
 		
-		$person = new Person($request->all());
-
-		$personDB = Person::where('id', $request->id)->get();
-
-		if($personDB){
-			Person::update($person);
-		}else{
-			Person::create($person);
+		$person = Person::where('id', $request->id)->get();
+		if(!$person){
+			$person = new Person();
 		}
+		$person->id = $request->id;
+		$person->name = $request->name;
+		$person->sex = $request->sex;
+		$person->age = $request->age;
+		$person->save();
 	    
-	    return response()->json(['id' => $person->id]);
+	    return response()->json(['id' => $request->id]);
 	}
 	
 	/**
@@ -69,20 +75,14 @@ class PersonController extends Controller
 	 */
 	public function savePersons(Request $request)
 	{
-		if($request){
-			foreach ($request as $person) {
-				return Person::updated($person);		
-			}
-		}
-
         if($request->persons){
-            foreach ($request->persons as $person) {
-                $personDB = Person::where('id', $person->id)->firstOrFail();
-                if($personDB){
-                    Person::update($personDB);
-                }else{
-                    Person::create($person);
-                }
+            foreach ($request->persons as $responsePerson) {
+                $person = new Person();
+				$person->id =  $responsePerson->id;
+				$person->name = $responsePerson->name;
+				$person->sex = $responsePerson->sex;
+				$person->age = $responsePerson->age;
+				$person->save();
             }
         }else{
             return response()->json(['errors' => 'Person Sync Fail'], 403);
@@ -103,14 +103,18 @@ class PersonController extends Controller
 	 */
 	public function delete($id)
 	{
-		$contact = Person::where('id', $id)->firstOrFail();
+		if(!$id){
+			return response()->json(['errors' => 'Person id is required.'], 403);
+		}
+
+		$person = Person::where('id', $id)->get();
 		
-        if($contact){
-            Person::delete($contact);
+        if(count($person) > 0){
+            $person->destroy();
         }else{
             return response()->json(['errors' => 'Person not exist'], 403);
         }
 
-        return response()->json(['Person ID' => id]);
+        return response()->json(['Person ID' => $id]);
 	}
 }

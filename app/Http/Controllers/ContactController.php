@@ -14,17 +14,23 @@ class ContactController extends Controller
     /**
      * Get Contact
      *
-     * Get Contact | Exemplo: api/v1/public/contact/id
+     * Get Contact | Exemplo: api/v1/contact/id
      * 
      * @param number $id
      */
 	public function get($id)
 	{
-		if($id){
-            return Contact::where('id', $id)->firstOrFail();
-        }else{
+		if(!$id){
             return response()->json(['errors' => 'Contact id is required.'], 403);
-        }
+		}
+		
+		$contact = Contact::where('id', $id)->first();
+	
+		if(!$contact){
+            return response()->json(['errors' => 'Contact not found.'], 403);
+		}
+
+		return $contact;
 	}
 	
 	/**
@@ -45,17 +51,19 @@ class ContactController extends Controller
 	    $contact = new Contact($request->all());
 		$contact->save();
 		
-		$contact = new Contact($request->all());
-		
-		$contactDB = Contact::where('id', $request->id)->firstOrFail();
-
-		if($contactDB){
-			Contact::update($contact);
-		}else{
-			Contact::create($contact);
+		$contact = Contact::where('id', $request->id)->get();
+		if(!$contact){
+			$contact = new Contact();
 		}
+
+		$contact->id = $request->id;
+		$contact->person = $request->person;
+		$contact->email = $request->email;
+		$contact->phone = $request->phone;
+		$contact->cellphone = $request->cellphone;
+		$contact->save();
 	    
-	    return response()->json(['id' => $contact->id]);
+	    return response()->json(['id' => $request->id]);
 	}
 
 	/**
@@ -68,13 +76,14 @@ class ContactController extends Controller
 	public function saveContacts(Request $request)
 	{
 		if($request->contacts){
-			foreach ($request->contacts as $contact) {
-                $contactDB = Contact::where('id', $contact->id)->firstOrFail();
-                if($contactDB){
-                    Contact::update($contactDB);
-                }else{
-                    Contact::save($contact);
-                }
+			foreach ($request->contacts as $responseContact) {
+				$contact = new Contact();
+				$contact->id = $responseContact['id'];
+				$contact->person = $responseContact['person'];
+				$contact->email = $responseContact['email'];
+				$contact->phone = $responseContact['phone'];
+				$contact->cellphone = $responseContact['cellphone'];
+				$contact->save();
 			}
 		}else{
             return response()->json(['errors' => 'Contact Sync Fail'], 403);
@@ -95,13 +104,18 @@ class ContactController extends Controller
 	 */
 	public function delete($id)
 	{
-        $contact = Contact::where('id', $id)->firstOrFail();
-        if($contact){
-	        Contact::delete($contact);
+		if(!$id){
+			return response()->json(['errors' => 'Contact id is required.'], 403);
+		}
+
+		$contact = Contact::where('id', $id)->get();
+
+        if(count($contact) > 0){
+			$contact->destroy();
         }else{
             return response()->json(['errors' => 'Contact not exist'], 403);
         }
 
-        return response()->json(['Contact ID' => id]);
+        return response()->json(['Contact ID' => $id]);
 	}
 }
