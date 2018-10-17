@@ -14,7 +14,7 @@ class PersonController extends Controller
     /**
      * Buscar Person
      *
-     * Buscar Person | Exemplo: api/v1/person/1
+     * Buscar Person | Exemplo: api/v1/public/person/id
      * 
      * @param number $id
      * 
@@ -29,7 +29,7 @@ class PersonController extends Controller
 	/**
 	 * Save Person
 	 *
-	 * Save Person | Exemplo: api/v1/person/criar
+	 * Save Person | Exemplo: api/v1/public/person/save
 	 * 
 	 * @return void
 	 */
@@ -52,7 +52,7 @@ class PersonController extends Controller
 	/**
 	 * Save Persons
 	 *
-	 * Save Persons | Exemplo: api/v1/person/criar
+	 * Save Persons | Exemplo: api/v1/public/person/savePersons
 	 *
 	 * @return void
 	 */
@@ -63,13 +63,28 @@ class PersonController extends Controller
 				return Person::updated($person);		
 			}
 		}
+
+        if($request->persons){
+            foreach ($request->persons as $person) {
+                $personDB = Person::where('id', $person->id)->firstOrFail();
+                if($personDB){
+                    Person::update($personDB);
+                }else{
+                    Person::save($person);
+                }
+            }
+        }else{
+            return response()->json(['errors' => 'Person Sync Fail'], 403);
+        }
+
+        return response()->json(['Person Sync' => 'OK']);
 	}
 	
 	
 	/**
 	 * Remover Person
 	 *
-	 * Remover Person | Exemplo: api/v1/person/delete/1
+	 * Remover Person | Exemplo: api/v1/public/person/delete/1
 	 * 
 	 * @param number $id
 	 * 
@@ -77,6 +92,13 @@ class PersonController extends Controller
 	 */
 	public function delete($id)
 	{
-	    return Person::destroy($id);
+        $contact = Person::where('id', $id)->firstOrFail();
+        if($contact){
+            Person::delete($contact);
+        }else{
+            return response()->json(['errors' => 'Person not exist'], 403);
+        }
+
+        return response()->json(['Person ID' => id]);
 	}
 }
