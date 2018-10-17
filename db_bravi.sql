@@ -1,7 +1,10 @@
 -- phpMyAdmin SQL Dump
 -- version 4.7.7
 -- https://www.phpmyadmin.net/
---
+
+
+CREATE DATABASE db_bravi;
+
 -- Host: 127.0.0.1
 -- Generation Time: 17-Out-2018 às 04:21
 -- Versão do servidor: 10.1.30-MariaDB
