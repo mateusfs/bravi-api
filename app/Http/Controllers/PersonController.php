@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Person;
 use Illuminate\Http\Request;
+use App\Person;
+
 
 /**
  * @resource Person
@@ -14,7 +15,7 @@ class PersonController extends Controller
     /**
      * Buscar Person
      *
-     * Buscar Person | Exemplo: api/v1/public/person/id
+     * Buscar Person | Exemplo: api/v1/person/id
      * 
      * @param number $id
      * 
@@ -22,29 +23,39 @@ class PersonController extends Controller
      */
 	public function get($id)
 	{
-		return Person::where('id', $id)->firstOrFail();
+		if($id){
+            return Person::where('id', $id)->firstOrFail();
+        }else{
+            return response()->json(['errors' => 'Person id is required.'], 403);
+        }
 	}
 	
 	
 	/**
 	 * Save Person
 	 *
-	 * Save Person | Exemplo: api/v1/public/person/save
+	 * Save Person | Exemplo: api/v1/person/save
 	 * 
 	 * @return void
 	 */
-	public function save(Request $request)
+	public function savePerson(Request $request)
 	{
-	    
 	    $request->validate([
 	        'id' => 'required',
 	        'name' => 'required',
 	        'sex' => 'required',
 	        'age' => 'required'
-	    ]);
-	    
-	    $person = new Person($request->all());
-	    $person->save();
+		]);
+		
+		$person = new Person($request->all());
+
+		$personDB = Person::where('id', $request->id)->get();
+
+		if($personDB){
+			Person::update($person);
+		}else{
+			Person::create($person);
+		}
 	    
 	    return response()->json(['id' => $person->id]);
 	}
@@ -52,7 +63,7 @@ class PersonController extends Controller
 	/**
 	 * Save Persons
 	 *
-	 * Save Persons | Exemplo: api/v1/public/person/savePersons
+	 * Save Persons | Exemplo: api/v1/person/savePersons
 	 *
 	 * @return void
 	 */
@@ -70,7 +81,7 @@ class PersonController extends Controller
                 if($personDB){
                     Person::update($personDB);
                 }else{
-                    Person::save($person);
+                    Person::create($person);
                 }
             }
         }else{
@@ -84,7 +95,7 @@ class PersonController extends Controller
 	/**
 	 * Remover Person
 	 *
-	 * Remover Person | Exemplo: api/v1/public/person/delete/1
+	 * Remover Person | Exemplo: api/v1/person/delete/1
 	 * 
 	 * @param number $id
 	 * 
@@ -92,7 +103,8 @@ class PersonController extends Controller
 	 */
 	public function delete($id)
 	{
-        $contact = Person::where('id', $id)->firstOrFail();
+		$contact = Person::where('id', $id)->firstOrFail();
+		
         if($contact){
             Person::delete($contact);
         }else{

@@ -20,17 +20,21 @@ class ContactController extends Controller
      */
 	public function get($id)
 	{
-		return Contact::where('id', $id)->firstOrFail();
+		if($id){
+            return Contact::where('id', $id)->firstOrFail();
+        }else{
+            return response()->json(['errors' => 'Contact id is required.'], 403);
+        }
 	}
 	
 	/**
 	 * Save Contact
 	 *
-	 * Save Contact | Exemplo: api/v1/public/contact/save
+	 * Save Contact | Exemplo: api/v1/contact/save
 	 *
 	 * @return void
 	 */
-	public function save(Request $request)
+	public function saveContact(Request $request)
 	{
 	    $request->validate([
 	        'id' => 'required',
@@ -39,7 +43,17 @@ class ContactController extends Controller
 	    ]);
 	    
 	    $contact = new Contact($request->all());
-	    $contact->save();
+		$contact->save();
+		
+		$contact = new Contact($request->all());
+		
+		$contactDB = Contact::where('id', $request->id)->firstOrFail();
+
+		if($contactDB){
+			Contact::update($contact);
+		}else{
+			Contact::create($contact);
+		}
 	    
 	    return response()->json(['id' => $contact->id]);
 	}
@@ -47,7 +61,7 @@ class ContactController extends Controller
 	/**
 	 * Save Contacts
 	 *
-	 * Save Contacts | Exemplo: api/v1/public/contact/saveContacts
+	 * Save Contacts | Exemplo: api/v1/contact/saveContacts
 	 *
 	 * @return void
 	 */
@@ -73,7 +87,7 @@ class ContactController extends Controller
 	/**
 	 * Delete Contact
 	 *
-	 * Delete Contact | Exemplo: api/v1/public/contact/delete/1
+	 * Delete Contact | Exemplo: api/v1/contact/delete/1
 	 *
 	 * @param number $id
 	 * 
