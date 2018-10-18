@@ -59,6 +59,7 @@ class PersonController extends Controller
 	    if(!$person){
 		  $person = new Person();
 		  $person->id = $request->id;
+		  $person->id_person = $request->id;
 	    }
 		$person->name = $request->name;
 		$person->sex = $request->sex;
@@ -82,6 +83,7 @@ class PersonController extends Controller
                 $person = Person::find($responsePerson['id']);
                 if(!$person){
                     $person = new Person();
+                    $person->id_person = $responsePerson['id'];
                     $person->id = $responsePerson['id'];
                 }
                 $person->name = $responsePerson['name'];
@@ -131,5 +133,17 @@ class PersonController extends Controller
         }
 
         return response()->json(['Person ID' => $id]);
+	}
+	
+	/**
+	 * Retive Persons
+	 *
+	 * Retive Person | Exemplo: api/v1/person/all
+	 *
+	 *
+	 * @return Persons
+	 */
+	public function retrivePersons(){
+	    return Person::all();
 	}
 }

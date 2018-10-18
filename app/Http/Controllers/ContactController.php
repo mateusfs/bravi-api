@@ -51,6 +51,7 @@ class ContactController extends Controller
 	    $contact = Contact::find($request->id);
 	    if(!$contact){
 	        $contact = new Contact();
+	        $contact->id_contact = $request->id;
 	        $contact->id = $request->id;
 	    }
 	    $contact->person = $request->person;
@@ -76,6 +77,7 @@ class ContactController extends Controller
 				$contact = Contact::find($request->id);
 				if(!$contact){
 				    $contact = new Contact();
+				    $contact->id_contact = $responseContact['id'];
 				    $contact->id = $responseContact['id'];
 				}
 				$contact->person = $responseContact['person'];
@@ -116,5 +118,17 @@ class ContactController extends Controller
         }
 
         return response()->json(['Contact ID' => $id]);
+	}
+	
+	/**
+	 * Retive Contacts
+	 *
+	 * Retive Contacts | Exemplo: api/v1/contact/all
+	 *
+	 *
+	 * @return Contacts
+	 */
+	public function retriveContacts(){
+	    return Contact::all();
 	}
 }
