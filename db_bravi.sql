@@ -6,7 +6,7 @@
 CREATE DATABASE db_bravi;
 
 -- Host: 127.0.0.1
--- Generation Time: 17-Out-2018 às 04:21
+-- Generation Time: 18-Out-2018 às 06:29
 -- Versão do servidor: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -32,11 +32,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `contact` (
-  `id` varchar(50) NOT NULL,
+  `id_contact` varchar(50) NOT NULL,
   `person` varchar(200) DEFAULT NULL,
   `email` varchar(200) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
-  `cellphone` varchar(20) DEFAULT NULL
+  `cellphone` varchar(20) DEFAULT NULL,
+  `id` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -46,10 +47,11 @@ CREATE TABLE `contact` (
 --
 
 CREATE TABLE `person` (
-  `id` varchar(50) NOT NULL,
+  `id_person` varchar(50) NOT NULL,
   `name` varchar(200) DEFAULT NULL,
   `sex` varchar(10) DEFAULT NULL,
-  `age` int(5) DEFAULT NULL
+  `age` int(5) DEFAULT NULL,
+  `id` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -60,13 +62,13 @@ CREATE TABLE `person` (
 -- Indexes for table `contact`
 --
 ALTER TABLE `contact`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id_contact`);
 
 --
 -- Indexes for table `person`
 --
 ALTER TABLE `person`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id_person`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
