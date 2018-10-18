@@ -24,7 +24,7 @@ class ContactController extends Controller
             return response()->json(['errors' => 'Contact id is required.'], 403);
 		}
 		
-		$contact = Contact::where('id', $id)->first();
+		$contact = Contact::find($id);
 	
 		if(!$contact){
             return response()->json(['errors' => 'Contact not found.'], 403);
@@ -48,20 +48,16 @@ class ContactController extends Controller
 	        'email' => 'required'
 	    ]);
 	    
-	    $contact = new Contact($request->all());
-		$contact->save();
-		
-		$contact = Contact::where('id', $request->id)->get();
-		if(!$contact){
-			$contact = new Contact();
-		}
-
-		$contact->id = $request->id;
-		$contact->person = $request->person;
-		$contact->email = $request->email;
-		$contact->phone = $request->phone;
-		$contact->cellphone = $request->cellphone;
-		$contact->save();
+	    $contact = Contact::find($request->id);
+	    if(!$contact){
+	        $contact = new Contact();
+	        $contact->id = $request->id;
+	    }
+	    $contact->person = $request->person;
+	    $contact->email = $request->email;
+	    $contact->phone = $request->phone;
+	    $contact->cellphone = $request->cellphone;
+	    $contact->save();
 	    
 	    return response()->json(['id' => $request->id]);
 	}
@@ -77,8 +73,11 @@ class ContactController extends Controller
 	{
 		if($request->contacts){
 			foreach ($request->contacts as $responseContact) {
-				$contact = new Contact();
-				$contact->id = $responseContact['id'];
+				$contact = Contact::find($request->id);
+				if(!$contact){
+				    $contact = new Contact();
+				    $contact->id = $responseContact['id'];
+				}
 				$contact->person = $responseContact['person'];
 				$contact->email = $responseContact['email'];
 				$contact->phone = $responseContact['phone'];
@@ -94,9 +93,9 @@ class ContactController extends Controller
 	
 	
 	/**
-	 * Delete Contact
+	 * Destroy Contact
 	 *
-	 * Delete Contact | Exemplo: api/v1/contact/delete/1
+	 * Destroy Contact | Exemplo: api/v1/contact/delete/1
 	 *
 	 * @param number $id
 	 * 
@@ -108,10 +107,10 @@ class ContactController extends Controller
 			return response()->json(['errors' => 'Contact id is required.'], 403);
 		}
 
-		$contact = Contact::where('id', $id)->get();
+		$contact = Contact::find($id);
 
-        if(count($contact) > 0){
-			$contact->destroy();
+		if($contact){
+		    Contact::destroy($id);
         }else{
             return response()->json(['errors' => 'Contact not exist'], 403);
         }

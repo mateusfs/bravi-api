@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Person;
+use App\Contact;
 
 
 /**
@@ -27,7 +28,7 @@ class PersonController extends Controller
             return response()->json(['errors' => 'Person id is required.'], 403);
 		}
 		
-		$person = Person::where('id', $id)->first();
+		$person = Person::find($id);
 	
 		if(!$person){
             return response()->json(['errors' => 'Person not found.'], 403);
@@ -53,16 +54,17 @@ class PersonController extends Controller
 	        'age' => 'required'
 		]);
 		
-		$person = Person::where('id', $request->id)->get();
-		if(!$person){
-			$person = new Person();
-		}
-		$person->id = $request->id;
+		
+	    $person = Person::find($request->id);
+	    if(!$person){
+		  $person = new Person();
+		  $person->id = $request->id;
+	    }
 		$person->name = $request->name;
 		$person->sex = $request->sex;
 		$person->age = $request->age;
-		$person->save();
-	    
+        $person->save();
+    
 	    return response()->json(['id' => $request->id]);
 	}
 	
@@ -77,12 +79,15 @@ class PersonController extends Controller
 	{
         if($request->persons){
             foreach ($request->persons as $responsePerson) {
-                $person = new Person();
-				$person->id =  $responsePerson->id;
-				$person->name = $responsePerson->name;
-				$person->sex = $responsePerson->sex;
-				$person->age = $responsePerson->age;
-				$person->save();
+                $person = Person::find($responsePerson['id']);
+                if(!$person){
+                    $person = new Person();
+                    $person->id = $responsePerson['id'];
+                }
+                $person->name = $responsePerson['name'];
+                $person->sex = $responsePerson['name'];
+                $person->age = $responsePerson['age'];
+                $person->save();
             }
         }else{
             return response()->json(['errors' => 'Person Sync Fail'], 403);
@@ -93,7 +98,7 @@ class PersonController extends Controller
 	
 	
 	/**
-	 * Remover Person
+	 * Destroy Person
 	 *
 	 * Remover Person | Exemplo: api/v1/person/delete/1
 	 * 
@@ -107,10 +112,20 @@ class PersonController extends Controller
 			return response()->json(['errors' => 'Person id is required.'], 403);
 		}
 
-		$person = Person::where('id', $id)->get();
+		$person = Person::find($id);
 		
-        if(count($person) > 0){
-            $person->destroy();
+        if($person){
+            
+            /**
+             *  TODO
+             *  Removing contact is necessary
+             *  Talk to PO
+             */
+            foreach (Contact::where('person', $id)->cursor() as $contact) {
+                Contact::destroy($contact->id);
+            }
+            
+            Person::destroy($id);
         }else{
             return response()->json(['errors' => 'Person not exist'], 403);
         }
